@@ -1,0 +1,527 @@
+{
+  "video": "/reel.mp4",
+  "fpsAnalyzed": 4,
+  "generatedAt": "2026-07-24T18:56:41.945Z",
+  "qualityThreshold": 80,
+  "placements": [
+    {
+      "category": "beverage",
+      "placementType": "replace",
+      "targetObject": "pink tumbler",
+      "startTime": 0,
+      "endTime": 6.75,
+      "anchorDescription": "bottom-center of existing pink tumbler on table surface",
+      "anchor": {
+        "x": 0.63,
+        "y": 0.66
+      },
+      "boxes": [
+        {
+          "timestamp": 0,
+          "x": 0.6,
+          "y": 0.56,
+          "width": 0.06,
+          "height": 0.1
+        },
+        {
+          "timestamp": 0.25,
+          "x": 0.6,
+          "y": 0.56,
+          "width": 0.06,
+          "height": 0.1
+        },
+        {
+          "timestamp": 0.5,
+          "x": 0.6,
+          "y": 0.56,
+          "width": 0.06,
+          "height": 0.1
+        },
+        {
+          "timestamp": 0.75,
+          "x": 0.6,
+          "y": 0.56,
+          "width": 0.06,
+          "height": 0.1
+        },
+        {
+          "timestamp": 1,
+          "x": 0.6,
+          "y": 0.56,
+          "width": 0.06,
+          "height": 0.1
+        },
+        {
+          "timestamp": 1.25,
+          "x": 0.6,
+          "y": 0.56,
+          "width": 0.06,
+          "height": 0.1
+        },
+        {
+          "timestamp": 1.5,
+          "x": 0.6,
+          "y": 0.56,
+          "width": 0.06,
+          "height": 0.1
+        },
+        {
+          "timestamp": 1.75,
+          "x": 0.6,
+          "y": 0.56,
+          "width": 0.06,
+          "height": 0.1
+        },
+        {
+          "timestamp": 2,
+          "x": 0.6,
+          "y": 0.56,
+          "width": 0.06,
+          "height": 0.1
+        },
+        {
+          "timestamp": 2.25,
+          "x": 0.6,
+          "y": 0.56,
+          "width": 0.06,
+          "height": 0.1
+        },
+        {
+          "timestamp": 2.5,
+          "x": 0.6,
+          "y": 0.56,
+          "width": 0.06,
+          "height": 0.1
+        },
+        {
+          "timestamp": 2.75,
+          "x": 0.6,
+          "y": 0.56,
+          "width": 0.06,
+          "height": 0.1
+        },
+        {
+          "timestamp": 3,
+          "x": 0.6,
+          "y": 0.56,
+          "width": 0.06,
+          "height": 0.1
+        },
+        {
+          "timestamp": 3.25,
+          "x": 0.6,
+          "y": 0.56,
+          "width": 0.06,
+          "height": 0.1
+        },
+        {
+          "timestamp": 3.5,
+          "x": 0.6,
+          "y": 0.56,
+          "width": 0.06,
+          "height": 0.1
+        },
+        {
+          "timestamp": 3.75,
+          "x": 0.6,
+          "y": 0.56,
+          "width": 0.06,
+          "height": 0.1
+        },
+        {
+          "timestamp": 4,
+          "x": 0.6,
+          "y": 0.53,
+          "width": 0.07,
+          "height": 0.14
+        },
+        {
+          "timestamp": 4.25,
+          "x": 0.6,
+          "y": 0.53,
+          "width": 0.07,
+          "height": 0.14
+        },
+        {
+          "timestamp": 4.5,
+          "x": 0.6,
+          "y": 0.53,
+          "width": 0.07,
+          "height": 0.14
+        },
+        {
+          "timestamp": 4.75,
+          "x": 0.6,
+          "y": 0.53,
+          "width": 0.07,
+          "height": 0.14
+        },
+        {
+          "timestamp": 5,
+          "x": 0.6,
+          "y": 0.53,
+          "width": 0.07,
+          "height": 0.14
+        },
+        {
+          "timestamp": 5.25,
+          "x": 0.6,
+          "y": 0.53,
+          "width": 0.07,
+          "height": 0.14
+        },
+        {
+          "timestamp": 5.5,
+          "x": 0.6,
+          "y": 0.53,
+          "width": 0.07,
+          "height": 0.14
+        },
+        {
+          "timestamp": 5.75,
+          "x": 0.6,
+          "y": 0.53,
+          "width": 0.07,
+          "height": 0.14
+        },
+        {
+          "timestamp": 6,
+          "x": 0.6,
+          "y": 0.53,
+          "width": 0.07,
+          "height": 0.14
+        },
+        {
+          "timestamp": 6.25,
+          "x": 0.6,
+          "y": 0.53,
+          "width": 0.07,
+          "height": 0.14
+        },
+        {
+          "timestamp": 6.5,
+          "x": 0.6,
+          "y": 0.53,
+          "width": 0.07,
+          "height": 0.14
+        },
+        {
+          "timestamp": 6.75,
+          "x": 0.6,
+          "y": 0.53,
+          "width": 0.07,
+          "height": 0.14
+        }
+      ],
+      "confidence": 0.93,
+      "occlusionRisk": 0.065,
+      "cameraMotion": "low",
+      "reason": "The pink tumbler is a generic beverage container that remains clearly visible on the table throughout the clip. It is not interacted with and sits in a stable position, making it ideal for replacement. | Generic pink tumbler sits untouched on the table throughout the clip, remaining clearly visible with no hand, face, or tablet occlusion—ideal for beverage replacement.",
+      "id": "chunk0-0-bc17610e",
+      "sourceChunks": [
+        0,
+        1
+      ],
+      "overallScore": 90
+    },
+    {
+      "category": "poster",
+      "placementType": "add",
+      "targetObject": null,
+      "startTime": 0,
+      "endTime": 3.75,
+      "anchorDescription": "center of blank wall area above the subject",
+      "anchor": {
+        "x": 0.3,
+        "y": 0.25
+      },
+      "boxes": [
+        {
+          "timestamp": 0,
+          "x": 0.18,
+          "y": 0.15,
+          "width": 0.24,
+          "height": 0.2
+        },
+        {
+          "timestamp": 0.25,
+          "x": 0.18,
+          "y": 0.15,
+          "width": 0.24,
+          "height": 0.2
+        },
+        {
+          "timestamp": 0.5,
+          "x": 0.18,
+          "y": 0.15,
+          "width": 0.24,
+          "height": 0.2
+        },
+        {
+          "timestamp": 0.75,
+          "x": 0.18,
+          "y": 0.15,
+          "width": 0.24,
+          "height": 0.2
+        },
+        {
+          "timestamp": 1,
+          "x": 0.18,
+          "y": 0.15,
+          "width": 0.24,
+          "height": 0.2
+        },
+        {
+          "timestamp": 1.25,
+          "x": 0.18,
+          "y": 0.15,
+          "width": 0.24,
+          "height": 0.2
+        },
+        {
+          "timestamp": 1.5,
+          "x": 0.18,
+          "y": 0.15,
+          "width": 0.24,
+          "height": 0.2
+        },
+        {
+          "timestamp": 1.75,
+          "x": 0.18,
+          "y": 0.15,
+          "width": 0.24,
+          "height": 0.2
+        },
+        {
+          "timestamp": 2,
+          "x": 0.18,
+          "y": 0.15,
+          "width": 0.24,
+          "height": 0.2
+        },
+        {
+          "timestamp": 2.25,
+          "x": 0.18,
+          "y": 0.15,
+          "width": 0.24,
+          "height": 0.2
+        },
+        {
+          "timestamp": 2.5,
+          "x": 0.18,
+          "y": 0.15,
+          "width": 0.24,
+          "height": 0.2
+        },
+        {
+          "timestamp": 2.75,
+          "x": 0.18,
+          "y": 0.15,
+          "width": 0.24,
+          "height": 0.2
+        },
+        {
+          "timestamp": 3,
+          "x": 0.18,
+          "y": 0.15,
+          "width": 0.24,
+          "height": 0.2
+        },
+        {
+          "timestamp": 3.25,
+          "x": 0.18,
+          "y": 0.15,
+          "width": 0.24,
+          "height": 0.2
+        },
+        {
+          "timestamp": 3.5,
+          "x": 0.18,
+          "y": 0.15,
+          "width": 0.24,
+          "height": 0.2
+        },
+        {
+          "timestamp": 3.75,
+          "x": 0.18,
+          "y": 0.15,
+          "width": 0.24,
+          "height": 0.2
+        }
+      ],
+      "confidence": 0.87,
+      "occlusionRisk": 0.02,
+      "cameraMotion": "low",
+      "reason": "Large blank wall area behind and above the subject is planar, unobstructed, and remains visible for the entire duration, providing a natural surface for a poster.",
+      "id": "chunk0-1-e9de201e",
+      "sourceChunks": [
+        0
+      ],
+      "overallScore": 90
+    },
+    {
+      "category": "beverage",
+      "placementType": "add",
+      "targetObject": null,
+      "startTime": 9,
+      "endTime": 13.75,
+      "anchorDescription": "empty wooden mantelpiece surface to the left of the candles",
+      "anchor": {
+        "x": 0.25,
+        "y": 0.55
+      },
+      "boxes": [
+        {
+          "timestamp": 9,
+          "x": 0.22,
+          "y": 0.45,
+          "width": 0.06,
+          "height": 0.1
+        },
+        {
+          "timestamp": 9.25,
+          "x": 0.22,
+          "y": 0.45,
+          "width": 0.06,
+          "height": 0.1
+        },
+        {
+          "timestamp": 9.5,
+          "x": 0.22,
+          "y": 0.45,
+          "width": 0.06,
+          "height": 0.1
+        },
+        {
+          "timestamp": 9.75,
+          "x": 0.22,
+          "y": 0.45,
+          "width": 0.06,
+          "height": 0.1
+        },
+        {
+          "timestamp": 10,
+          "x": 0.22,
+          "y": 0.45,
+          "width": 0.06,
+          "height": 0.1
+        },
+        {
+          "timestamp": 10.25,
+          "x": 0.22,
+          "y": 0.45,
+          "width": 0.06,
+          "height": 0.1
+        },
+        {
+          "timestamp": 10.5,
+          "x": 0.22,
+          "y": 0.45,
+          "width": 0.06,
+          "height": 0.1
+        },
+        {
+          "timestamp": 10.75,
+          "x": 0.22,
+          "y": 0.45,
+          "width": 0.06,
+          "height": 0.1
+        },
+        {
+          "timestamp": 11,
+          "x": 0.22,
+          "y": 0.45,
+          "width": 0.06,
+          "height": 0.1
+        },
+        {
+          "timestamp": 11.25,
+          "x": 0.22,
+          "y": 0.45,
+          "width": 0.06,
+          "height": 0.1
+        },
+        {
+          "timestamp": 11.5,
+          "x": 0.22,
+          "y": 0.45,
+          "width": 0.06,
+          "height": 0.1
+        },
+        {
+          "timestamp": 11.75,
+          "x": 0.22,
+          "y": 0.45,
+          "width": 0.06,
+          "height": 0.1
+        },
+        {
+          "timestamp": 12,
+          "x": 0.22,
+          "y": 0.45,
+          "width": 0.06,
+          "height": 0.1
+        },
+        {
+          "timestamp": 12.25,
+          "x": 0.22,
+          "y": 0.45,
+          "width": 0.06,
+          "height": 0.1
+        },
+        {
+          "timestamp": 12.5,
+          "x": 0.22,
+          "y": 0.45,
+          "width": 0.06,
+          "height": 0.1
+        },
+        {
+          "timestamp": 12.75,
+          "x": 0.22,
+          "y": 0.45,
+          "width": 0.06,
+          "height": 0.1
+        },
+        {
+          "timestamp": 13,
+          "x": 0.21,
+          "y": 0.55,
+          "width": 0.07,
+          "height": 0.09
+        },
+        {
+          "timestamp": 13.25,
+          "x": 0.21,
+          "y": 0.55,
+          "width": 0.07,
+          "height": 0.09
+        },
+        {
+          "timestamp": 13.5,
+          "x": 0.21,
+          "y": 0.56,
+          "width": 0.07,
+          "height": 0.09
+        },
+        {
+          "timestamp": 13.75,
+          "x": 0.22,
+          "y": 0.56,
+          "width": 0.07,
+          "height": 0.09
+        }
+      ],
+      "confidence": 0.905,
+      "occlusionRisk": 0.035,
+      "cameraMotion": "low",
+      "reason": "Empty mantel surface to the left of the existing candles is consistently visible, physically flat, and unobstructed by the person or text overlay for the entire clip, making it a natural spot for a coffee mug in a cozy reading scene. | Empty wooden table surface in front of fireplace remains consistently visible and unobstructed. Candles occupy only the right side, leaving ample stable space for a cup or mug with no hand or face occlusion.",
+      "id": "chunk3-0-f88c8551",
+      "sourceChunks": [
+        3,
+        4
+      ],
+      "overallScore": 90
+    }
+  ]
+}
