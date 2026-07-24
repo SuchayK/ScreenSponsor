@@ -49,12 +49,13 @@ async function probe(target:string) {
 
 function candidate(duration = 8000) {
   const quad: NormalizedQuad = [{x:.50,y:.20},{x:.87,y:.22},{x:.86,y:.49},{x:.51,y:.47}];
-  return { id: randomUUID(), mode:"wall" as const, quad, startMs:300, endMs:Math.min(duration, 8000), confidence:.91, rationale:"Stable, unobstructed wall plane with consistent lighting and clear separation from the subject.", lighting:"Soft daylight from camera-left", occlusionRisk:"low" as const, safety:"pass" as const };
+  const endMs=Math.min(duration,8000);
+  return { id: randomUUID(), mode:"wall" as const, quad, startMs:300, endMs, confidence:.91, rationale:"Stable, unobstructed wall plane with consistent lighting and clear separation from the subject.", lighting:"Soft daylight from camera-left", occlusionRisk:"low" as const, safety:"pass" as const, keyframes:[{timestampMs:300,quad},{timestampMs:endMs,quad}] };
 }
 
-export function createJob(uploadId?: string, autoStart = true, originalUrl?: string, sourceDurationMs=8000) {
+export function createJob(uploadId?: string, autoStart = true, originalUrl?: string, sourceDurationMs=12000) {
   const id = randomUUID();
-  const source = originalUrl || (uploadId && state.uploads.get(uploadId) ? `/api/artifacts/source/${uploadId}` : "/demo/original.mp4");
+  const source = originalUrl || (uploadId && state.uploads.get(uploadId) ? `/api/artifacts/source/${uploadId}` : "/demo/seeded-12s.mp4");
   const providerMode = process.env.FIREWORKS_API_KEY && process.env.DAYTONA_API_KEY ? "connected" : "demo";
   const job: JobView = { id, stage:"uploaded", progress:4, candidates:[], selectedCandidateId:null, artifacts:{ original:source }, evaluations:[], events:[event("uploaded", "Source secured", "Video validated and copied into a private job workspace.", "SceneSponsor")], error:null, campaign:"Daytona — Build Anywhere", approvalBlocked:true, providerMode, sourceDurationMs:Math.max(5000,Math.min(12000,sourceDurationMs)) };
   saveJob(job);
@@ -75,7 +76,7 @@ async function run(command: string, args: string[]) {
 }
 
 async function render(job: JobView) {
-  if (process.env.VERCEL && job.artifacts.original === "/demo/original.mp4") {
+  if (process.env.VERCEL && job.artifacts.original === "/demo/seeded-12s.mp4") {
     job.artifacts.vision = "/demo/vision.mp4";
     job.artifacts.final = "/demo/final.mp4";
     return;
@@ -107,7 +108,7 @@ export async function processJob(id: string) {
       try { const planned=await analyzeVideo(resolveSource(job)); job.candidates=planned.map(c=>({...c,id:randomUUID()})).filter(c=>c.safety!=="reject"&&rankCandidate(c)>=.5).sort((a,b)=>rankCandidate(b)-rankCandidate(a)); }
       catch(error){job.providerMode="demo";job.events.push(event("analyzing","Video model fallback",error instanceof Error?error.message:"Fireworks analysis was unavailable; continuing with deterministic geometry.","Fireworks"));}
     }
-    if(!job.candidates.length)job.candidates = [candidate(), {...candidate(), id:randomUUID(), mode:"counter", confidence:.73, occlusionRisk:"medium", rationale:"Counter edge is usable but partially leaves frame."}];
+    if(!job.candidates.length)job.candidates = [candidate(job.sourceDurationMs), {...candidate(job.sourceDurationMs), id:randomUUID(), mode:"counter", confidence:.73, occlusionRisk:"medium", rationale:"Counter edge is usable but partially leaves frame."}];
     await wait(650); advance(job,"proposing",28,`${job.candidates.length} surface${job.candidates.length===1?"":"s"} proposed`,"Candidates ranked for context, geometry, stability, and safety.","Fireworks");
     await wait(600); advance(job,"critiquing",39,"Geometry challenged","Critic verified bounds, area, subject separation, and perspective.","Fireworks");
     await wait(550); job.selectedCandidateId = job.candidates[0].id; advance(job,"matching",49,"Campaign matched","Daytona creative fits the maker-studio context and permits wall placement.","Fireworks");
