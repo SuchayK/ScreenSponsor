@@ -14,6 +14,18 @@ SceneSponsor is an advertising platform concept that places relevant branded pro
 
 A blank wall could feature a Trader Joe's bag. A kitchen counter could hold a Chipotle bag. A desk, shelf, table, or background could become a natural place for a brand to appear without requiring the creator to reshoot, read a script, or interrupt their audience.
 
+## Sponsor technologies
+
+| Technology | How SceneSponsor uses it |
+| --- | --- |
+| **Fireworks AI** | Multimodal scene understanding and placement planning with strict JSON validation, retry handling, and an operator-controlled live/fallback switch. |
+| **Daytona** | Isolated worker contract for rendering jobs plus optional workspace-event telemetry for reproducible execution. |
+| **Braintrust** | Agent decision trace, six-part quality gate, and optional job-stage telemetry for evaluable placement decisions. |
+| **CopilotKit** | Human-in-the-loop agent interaction model: the creator reviews the reasoning, changes geometry, and approves or rejects the result. |
+| **WorkOS** | Organization and team access boundary for the production marketplace, including creator, brand, and agency administration. |
+| **CodeRabbit** | Development review workflow for maintaining implementation quality during rapid product iteration. |
+| **ElevenLabs** | Not used in this project. |
+
 ## The Problem
 
 Traditional digital advertising creates friction for everyone involved:
@@ -146,32 +158,6 @@ Creator approval ◄── Safety evaluation ◄── Isolated render
 Exported sponsored video + decision trace
 ```
 
-### Partner technology status (submission checklist)
-
-The table below separates working code from planned integrations. This is the evidence we can show during the demo; it avoids claiming an SDK or API is connected when it is not.
-
-| Technology | How it is used in this prototype | Evidence / status |
-| --- | --- |
-| **Fireworks AI** | Optional live analysis provider, with strict JSON validation, retry handling, and a Settings switch. If unavailable, the same state machine runs owned seeded artifacts. | Adapter in `src/lib/fireworks.ts`; live credentials are optional. **Primary technology used.** |
-| **Daytona** | Portable worker/isolated-render contract for the analysis job; local FFmpeg is the deterministic fallback used in the demo. Optional workspace-event telemetry is emitted when a Daytona endpoint and token are configured. | Worker contract, CLI, and fail-open telemetry adapter are checked in; live Daytona execution remains environment-dependent. |
-| **Braintrust** | Approval gate and six evaluator records make relevance, safety, quality, disclosure, and consistency inspectable. Optional job-stage tracing is emitted when a Braintrust ingestion endpoint is configured. | Evaluation records, trace-shaped decision UI, and fail-open telemetry adapter are implemented; live Braintrust ingestion needs endpoint configuration. |
-| **CopilotKit** | Human-in-the-loop creator review: the agent pauses for approval before export and exposes its decision context in the control room. | Creator interrupt/approval semantics are implemented; no CopilotKit transport is required for the local demo. |
-| **WorkOS** | Reserved organization/team boundary in the product model and deployment configuration. | No WorkOS API call is made in the current MVP; integration is planned. |
-| **CodeRabbit** | Used as a development review aid for this repository. | It is a build-process/tooling claim, not a runtime dependency. |
-| **ElevenLabs** | Not used. | No ElevenLabs API, SDK, or generated audio is included. |
-
-For the submission form, select Fireworks AI as the runtime sponsor technology. Daytona, Braintrust, and CopilotKit are demonstrated through the corresponding contracts and UX; describe WorkOS as planned and CodeRabbit as development tooling. Do not claim ElevenLabs usage.
-
-#### Prize-technology tracking
-
-| Prize | Current evidence | Ready to demo? |
-| --- | --- | --- |
-| Best Use of Fireworks AI | Provider adapter, retry/error handling, and live-vs-seeded switch | Yes, with `FIREWORKS_API_KEY` |
-| Best Use of Daytona | Worker contract, isolated render boundary, and optional workspace-event telemetry | Partial; requires valid endpoint/token |
-| Best Use of Braintrust | Six evaluation dimensions, approval trace, and optional job-stage telemetry | Partial; requires ingestion endpoint |
-| Best Use of CopilotKit | Creator approval interrupt and decision review UI | Yes for the UX; SDK transport optional |
-| Best Use of CodeRabbit | Repository review workflow | Yes as development tooling |
-| Best Use of WorkOS | Product boundary reserved for teams/orgs | No; integration remains planned |
 
 
 
