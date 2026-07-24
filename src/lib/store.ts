@@ -76,7 +76,7 @@ async function run(command: string, args: string[]) {
 }
 
 async function render(job: JobView) {
-  if (process.env.VERCEL && job.artifacts.original === "/demo/seeded-12s.mp4") {
+  if (job.artifacts.original === "/demo/seeded-12s.mp4") {
     job.artifacts.vision = "/demo/vision.mp4";
     job.artifacts.final = "/demo/final.mp4";
     return;
