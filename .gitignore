@@ -1,6 +1,9 @@
 node_modules
 .next
+.next-*
 .data
+.claude-flow
+.playwright-mcp
 coverage
 *.log
 *.tsbuildinfo

@@ -23,6 +23,8 @@
 | Supabase | Full migration and RLS boundary | Project keys not configured |
 | Vercel | Next.js production build and static recovery artifacts | CLI authenticated |
 
+ElevenLabs is intentionally not part of this MVP: there is no ElevenLabs API call, SDK dependency, or generated audio in the repository. WorkOS is likewise a planned organization/authentication integration rather than a live runtime dependency. See the sponsor and prize checklist in the root [README](../README.md) before describing integrations in the submission.
+
 The seeded clip and pre-rendered recovery artifacts are owned demo fixtures. They are intentionally labeled local/verified mode and must not be presented as a live provider run.
 
 ## Local run
@@ -33,4 +35,4 @@ npm test
 npm run dev
 ```
 
-Open `http://localhost:3000`, select **Analyze seeded clip**, wait for the quality gate, then approve and export.
+Open `http://localhost:3000`, select **Analyze clip**, wait for the quality gate, then approve and export.
