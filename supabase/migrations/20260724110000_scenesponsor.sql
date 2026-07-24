@@ -1,0 +1,20 @@
+create extension if not exists pgcrypto;
+
+create type placement_mode as enum ('wall', 'counter');
+create type job_stage as enum ('uploaded','analyzing','proposing','critiquing','needs_adjustment','matching','tracking','rendering','evaluating','awaiting_approval','completed','rejected','failed');
+
+create table projects (id uuid primary key default gen_random_uuid(), demo_session text not null, name text not null, created_at timestamptz not null default now());
+create table campaigns (id uuid primary key default gen_random_uuid(), brand text not null, name text not null, wall_asset_path text, counter_asset_path text, modes placement_mode[] not null default '{}', allowed_contexts text[] not null default '{}', prohibited_contexts text[] not null default '{}', disclosure text not null default 'Sponsored placement', active boolean not null default true, created_at timestamptz not null default now());
+create table jobs (id uuid primary key default gen_random_uuid(), project_id uuid references projects on delete cascade, campaign_id uuid references campaigns, demo_session text not null, stage job_stage not null default 'uploaded', progress smallint not null default 0 check(progress between 0 and 100), selected_candidate_id uuid, source_path text not null, error jsonb, braintrust_trace_url text, created_at timestamptz not null default now(), updated_at timestamptz not null default now());
+create table placement_candidates (id uuid primary key default gen_random_uuid(), job_id uuid not null references jobs on delete cascade, mode placement_mode not null, quad jsonb not null, start_ms integer not null, end_ms integer not null, confidence real not null check(confidence between 0 and 1), rationale text not null, lighting text not null, occlusion_risk text not null check(occlusion_risk in ('low','medium','high')), safety text not null check(safety in ('pass','review','reject')), created_at timestamptz not null default now());
+alter table jobs add constraint jobs_selected_candidate_fk foreign key(selected_candidate_id) references placement_candidates(id);
+create table artifacts (id uuid primary key default gen_random_uuid(), job_id uuid not null references jobs on delete cascade, kind text not null check(kind in ('original','vision','final','thumbnail')), storage_path text not null, metadata jsonb not null default '{}', created_at timestamptz not null default now(), unique(job_id,kind));
+create table agent_events (id uuid primary key default gen_random_uuid(), job_id uuid not null references jobs on delete cascade, stage job_stage not null, source text not null, title text not null, detail text not null, created_at timestamptz not null default now());
+create table evaluations (id uuid primary key default gen_random_uuid(), job_id uuid not null references jobs on delete cascade, name text not null, score real not null check(score between 0 and 1), passed boolean not null, detail text not null, created_at timestamptz not null default now());
+create table approvals (id uuid primary key default gen_random_uuid(), job_id uuid not null references jobs on delete cascade, demo_session text not null, decision text not null check(decision in ('approve','adjust','reject')), geometry jsonb, created_at timestamptz not null default now());
+
+alter table projects enable row level security; alter table campaigns enable row level security; alter table jobs enable row level security; alter table placement_candidates enable row level security; alter table artifacts enable row level security; alter table agent_events enable row level security; alter table evaluations enable row level security; alter table approvals enable row level security;
+create policy "active campaigns are readable" on campaigns for select using (active = true);
+
+insert into campaigns(brand,name,wall_asset_path,counter_asset_path,modes,allowed_contexts,prohibited_contexts,disclosure)
+values ('Daytona','Build Anywhere','campaigns/daytona-wall.png','campaigns/daytona-product.png',array['wall','counter']::placement_mode[],array['developer','studio','maker'],array['weapons','medical','minors'],'Sponsored placement');

@@ -1,0 +1,1 @@
+"""SceneSponsor isolated rendering worker."""

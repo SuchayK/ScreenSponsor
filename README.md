@@ -4,6 +4,12 @@
 
 **Built for Daytona HackSprint #5 with Braintrust — San Francisco, July 24, 2026.**
 
+## Runnable MVP
+
+The Broadcast Control MVP is implemented in this repository. Run `npm install && npm run dev`, open `http://localhost:3000`, and select **Analyze seeded clip** for the verified end-to-end flow. It creates real 720×1280 H.264/AAC artifacts locally with FFmpeg, evaluates them, requires creator approval, and only then unlocks export.
+
+See [docs/IMPLEMENTATION.md](docs/IMPLEMENTATION.md) for the exact provider status and setup boundaries. The interface explicitly distinguishes local verified rendering from credential-backed provider runs.
+
 SceneSponsor is an advertising platform concept that places relevant branded products naturally inside existing short-form videos and digital content. Instead of stopping a viewer's experience with a dedicated ad, SceneSponsor turns suitable surfaces and spaces within the content into tasteful, measurable sponsorship opportunities.
 
 A blank wall could feature a Trader Joe's bag. A kitchen counter could hold a Chipotle bag. A desk, shelf, table, or background could become a natural place for a brand to appear without requiring the creator to reshoot, read a script, or interrupt their audience.

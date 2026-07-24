@@ -4,5 +4,7 @@ node_modules
 coverage
 *.log
 *.tsbuildinfo
+__pycache__/
+*.pyc
 .env*
 !.env.example
