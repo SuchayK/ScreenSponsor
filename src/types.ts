@@ -11,7 +11,16 @@ export interface PlacementCandidate {
   keyframes?: PlacementKeyframe[];
 }
 export interface EvaluationResult { id: string; name: string; score: number; passed: boolean; detail: string }
-export interface AgentEvent { id: string; stage: JobStage; title: string; detail: string; at: string; source: "Fireworks" | "Daytona" | "Braintrust" | "Creator" | "SceneSponsor" }
+export interface AgentEvent { id: string; stage: JobStage; title: string; detail: string; at: string; source: "Fireworks" | "Daytona" | "Braintrust" | "CopilotKit" | "Creator" | "SceneSponsor" }
+export interface CompositeAdjustment {
+  brightness: number;
+  scale: number;
+  offsetX: number;
+  offsetY: number;
+  opacity: number;
+  instruction: string;
+  updatedAt: string;
+}
 export interface JobView {
   id: string; stage: JobStage; progress: number; candidates: PlacementCandidate[];
   selectedCandidateId: string | null; artifacts: Partial<Record<"original" | "vision" | "final" | "thumbnail", string>>;
@@ -20,4 +29,5 @@ export interface JobView {
   campaign: string; approvalBlocked: boolean; providerMode: "demo" | "connected";
   campaignAsset?: string;
   sourceDurationMs?: number;
+  compositeAdjustment?: CompositeAdjustment;
 }
