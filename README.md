@@ -22,9 +22,7 @@ A blank wall could feature a Trader Joe's bag. A kitchen counter could hold a Ch
 | **Daytona** | Isolated worker contract for rendering jobs plus optional workspace-event telemetry for reproducible execution. |
 | **Braintrust** | Agent decision trace, six-part quality gate, and optional job-stage telemetry for evaluable placement decisions. |
 | **CopilotKit** | Human-in-the-loop agent interaction model: the creator reviews the reasoning, changes geometry, and approves or rejects the result. |
-| **WorkOS** | Organization and team access boundary for the production marketplace, including creator, brand, and agency administration. |
 | **CodeRabbit** | Development review workflow for maintaining implementation quality during rapid product iteration. |
-| **ElevenLabs** | Not used in this project. |
 
 ## The Problem
 
