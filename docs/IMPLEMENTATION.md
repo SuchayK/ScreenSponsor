@@ -3,6 +3,7 @@
 ## What runs today
 
 - The Next.js control room accepts MP4/MOV clips, validates MIME, size, 5–12 second duration, portrait orientation, and the 720×1280 ceiling.
+- Browser uploads go directly into the private `scenesponsor-media` Supabase bucket using a one-time signed upload token, avoiding Vercel request-size limits. Original, Vision, and Sponsored playback URLs are short-lived signed URLs.
 - Jobs advance through the public stage contract and publish an inspectable event stream.
 - The local render path runs real FFmpeg work, emits separate Agent Vision and sponsored H.264/AAC MP4s, and preserves the source duration and audio.
 - Six deterministic evaluation records gate creator approval. Export returns `403` before approval.
@@ -16,7 +17,7 @@
 | Component | Repository implementation | Live credential status |
 | --- | --- | --- |
 | Fireworks | Strict JSON-schema video adapter with 1/3/7 second 503 retry | Not configured locally |
-| Daytona | Portable worker CLI and snapshot contract | Not configured locally |
+| Daytona | Portable worker CLI and snapshot contract | Supplied key currently fails SDK authentication; bundled FFmpeg is the verified render fallback |
 | Braintrust | Six-result approval gate and trace-shaped UI | API tracing needs a key |
 | CopilotKit | Creator interrupt semantics implemented in the control room | SDK transport not yet connected |
 | Supabase | Full migration and RLS boundary | Project keys not configured |

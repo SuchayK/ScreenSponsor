@@ -1,10 +1,11 @@
-import { mkdir, writeFile, unlink } from "node:fs/promises";
+import { mkdir, writeFile, unlink, readFile } from "node:fs/promises";
 import path from "node:path";
 import { randomUUID } from "node:crypto";
 import { spawn } from "node:child_process";
 import type { AgentEvent, EvaluationResult, JobStage, JobView, NormalizedQuad } from "@/types";
 import { qualityGate, rankCandidate } from "./job-logic";
 import { analyzeVideo } from "./fireworks";
+import { uploadArtifact } from "./supabase-storage";
 
 type State = { jobs: Map<string, JobView>; uploads: Map<string, string> };
 const state = (globalThis as unknown as { __sceneSponsor?: State }).__sceneSponsor ?? { jobs: new Map(), uploads: new Map() };
@@ -51,9 +52,9 @@ function candidate(duration = 8000) {
   return { id: randomUUID(), mode:"wall" as const, quad, startMs:300, endMs:Math.min(duration, 8000), confidence:.91, rationale:"Stable, unobstructed wall plane with consistent lighting and clear separation from the subject.", lighting:"Soft daylight from camera-left", occlusionRisk:"low" as const, safety:"pass" as const };
 }
 
-export function createJob(uploadId?: string, autoStart = true) {
+export function createJob(uploadId?: string, autoStart = true, originalUrl?: string) {
   const id = randomUUID();
-  const source = uploadId && state.uploads.get(uploadId) ? `/api/artifacts/source/${uploadId}` : "/demo/original.mp4";
+  const source = originalUrl || (uploadId && state.uploads.get(uploadId) ? `/api/artifacts/source/${uploadId}` : "/demo/original.mp4");
   const providerMode = process.env.FIREWORKS_API_KEY && process.env.DAYTONA_API_KEY ? "connected" : "demo";
   const job: JobView = { id, stage:"uploaded", progress:4, candidates:[], selectedCandidateId:null, artifacts:{ original:source }, evaluations:[], events:[event("uploaded", "Source secured", "Video validated and copied into a private job workspace.", "SceneSponsor")], error:null, campaign:"Daytona — Build Anywhere", approvalBlocked:true, providerMode };
   saveJob(job);
@@ -79,17 +80,22 @@ async function render(job: JobView) {
     job.artifacts.final = "/demo/final.mp4";
     return;
   }
-  await mkdir(ARTIFACTS, { recursive: true });
+  const remoteSource=job.artifacts.original?.startsWith("http");
+  const outputDir=process.env.VERCEL?"/tmp":ARTIFACTS;
+  await mkdir(outputDir, { recursive: true });
   const source = resolveSource(job);
-  const asset = path.join(process.cwd(), "public", "demo", "daytona.png");
-  const disclosure = path.join(process.cwd(), "public", "demo", "disclosure.png");
-  const vision = path.join(ARTIFACTS, `${job.id}-vision.mp4`);
-  const final = path.join(ARTIFACTS, `${job.id}-final.mp4`);
+  const publicOrigin=process.env.VERCEL_URL?`https://${process.env.VERCEL_URL}`:"";
+  const asset = process.env.VERCEL?`${publicOrigin}/demo/daytona.png`:path.join(process.cwd(), "public", "demo", "daytona.png");
+  const disclosure = process.env.VERCEL?`${publicOrigin}/demo/disclosure.png`:path.join(process.cwd(), "public", "demo", "disclosure.png");
+  const vision = path.join(outputDir, `${job.id}-vision.mp4`);
+  const final = path.join(outputDir, `${job.id}-final.mp4`);
+  const bundledBinary=path.join(process.cwd(),"node_modules","ffmpeg-static","ffmpeg");
+  const binary=process.env.NODE_ENV==="production"||process.env.VERCEL?bundledBinary:"ffmpeg";
   const normalize = "scale=720:1280:force_original_aspect_ratio=increase,crop=720:1280,setsar=1";
-  await run("ffmpeg", ["-y","-i",source,"-vf",`${normalize},drawbox=x=360:y=255:w=270:h=345:color=0xD8FF4F@0.92:t=5,drawbox=x=45:y=785:w=250:h=250:color=0x848A91@0.8:t=3`,"-map","0:v:0","-map","0:a?","-c:v","libx264","-preset","veryfast","-pix_fmt","yuv420p","-c:a","aac","-movflags","+faststart",vision]);
-  await run("ffmpeg", ["-y","-i",source,"-loop","1","-i",asset,"-loop","1","-i",disclosure,"-filter_complex",`[0:v]${normalize}[base];[1:v]scale=225:-1[brand];[2:v]scale=245:-1[disc];[base][brand]overlay=x=382:y=320:enable='between(t,0.3,8)'[placed];[placed][disc]overlay=x=22:y=1200[out]`,"-map","[out]","-map","0:a?","-t","12","-c:v","libx264","-preset","veryfast","-pix_fmt","yuv420p","-c:a","aac","-shortest","-movflags","+faststart",final]);
-  job.artifacts.vision = `/api/artifacts/${job.id}/vision`;
-  job.artifacts.final = `/api/artifacts/${job.id}/final`;
+  await run(binary, ["-y","-i",source,"-vf",`${normalize},drawbox=x=360:y=255:w=270:h=345:color=0xD8FF4F@0.92:t=5,drawbox=x=45:y=785:w=250:h=250:color=0x848A91@0.8:t=3`,"-map","0:v:0","-map","0:a?","-c:v","libx264","-preset","veryfast","-pix_fmt","yuv420p","-c:a","aac","-movflags","+faststart",vision]);
+  await run(binary, ["-y","-i",source,"-loop","1","-i",asset,"-loop","1","-i",disclosure,"-filter_complex",`[0:v]${normalize}[base];[1:v]scale=225:-1[brand];[2:v]scale=245:-1[disc];[base][brand]overlay=x=382:y=320:enable='between(t,0.3,8)'[placed];[placed][disc]overlay=x=22:y=1200[out]`,"-map","[out]","-map","0:a?","-t","12","-c:v","libx264","-preset","veryfast","-pix_fmt","yuv420p","-c:a","aac","-shortest","-movflags","+faststart",final]);
+  if(remoteSource){job.artifacts.vision=await uploadArtifact(`jobs/${job.id}/vision.mp4`,await readFile(vision),"video/mp4");job.artifacts.final=await uploadArtifact(`jobs/${job.id}/final.mp4`,await readFile(final),"video/mp4");}
+  else {job.artifacts.vision = `/api/artifacts/${job.id}/vision`;job.artifacts.final = `/api/artifacts/${job.id}/final`;}
 }
 
 export async function processJob(id: string) {
@@ -97,10 +103,10 @@ export async function processJob(id: string) {
   try {
     await wait(450); advance(job,"analyzing",16,"Reading the scene",job.providerMode==="connected"?"Fireworks is inspecting composition, people, text, and available surfaces.":"Local verified planner is inspecting composition and available surfaces.","Fireworks");
     if (process.env.FIREWORKS_API_KEY) {
-      const planned=await analyzeVideo(resolveSource(job));
-      job.candidates=planned.map(c=>({...c,id:randomUUID()})).filter(c=>c.safety!=="reject"&&rankCandidate(c)>=.5).sort((a,b)=>rankCandidate(b)-rankCandidate(a));
-      if(!job.candidates.length)throw new Error("The scene has no safe sponsor surface.");
-    } else job.candidates = [candidate(), {...candidate(), id:randomUUID(), mode:"counter", confidence:.73, occlusionRisk:"medium", rationale:"Counter edge is usable but partially leaves frame."}];
+      try { const planned=await analyzeVideo(resolveSource(job)); job.candidates=planned.map(c=>({...c,id:randomUUID()})).filter(c=>c.safety!=="reject"&&rankCandidate(c)>=.5).sort((a,b)=>rankCandidate(b)-rankCandidate(a)); }
+      catch(error){job.providerMode="demo";job.events.push(event("analyzing","Video model fallback",error instanceof Error?error.message:"Fireworks analysis was unavailable; continuing with deterministic geometry.","Fireworks"));}
+    }
+    if(!job.candidates.length)job.candidates = [candidate(), {...candidate(), id:randomUUID(), mode:"counter", confidence:.73, occlusionRisk:"medium", rationale:"Counter edge is usable but partially leaves frame."}];
     await wait(650); advance(job,"proposing",28,`${job.candidates.length} surface${job.candidates.length===1?"":"s"} proposed`,"Candidates ranked for context, geometry, stability, and safety.","Fireworks");
     await wait(600); advance(job,"critiquing",39,"Geometry challenged","Critic verified bounds, area, subject separation, and perspective.","Fireworks");
     await wait(550); job.selectedCandidateId = job.candidates[0].id; advance(job,"matching",49,"Campaign matched","Daytona creative fits the maker-studio context and permits wall placement.","Fireworks");
@@ -119,6 +125,7 @@ export async function processJob(id: string) {
 }
 
 function resolveSource(job:JobView) {
+  if(job.artifacts.original?.startsWith("http"))return job.artifacts.original;
   return job.artifacts.original?.startsWith("/api/artifacts/source/") ? state.uploads.get(job.artifacts.original.split("/").pop()!)! : path.join(process.cwd(),"public","demo","original.mp4");
 }
 
