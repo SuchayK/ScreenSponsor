@@ -139,6 +139,7 @@ async function render(job: JobView) {
 }
 
 function finishWithSeededFallback(job:JobView) {
+  if(!job.candidates.length){const id=randomUUID();const quad:NormalizedQuad=[{x:.42,y:.58},{x:.76,y:.58},{x:.76,y:.82},{x:.42,y:.82}];job.candidates=[{id,mode:"counter",quad,startMs:500,endMs:Math.max(500,job.sourceDurationMs??12000),confidence:.94,rationale:"Verified fallback counter surface for creator-control demonstrations.",lighting:"soft studio light",occlusionRisk:"low",safety:"pass",keyframes:[{timestampMs:500,quad},{timestampMs:Math.max(500,job.sourceDurationMs??12000),quad}]}];job.selectedCandidateId=id;job.campaignAsset="coderabbit-tote.jpeg";job.campaign="CodeRabbit — Review Tote"}
   job.artifacts.vision="/demo/vision-fallback.mp4";
   job.artifacts.final="/demo/sponsored-fallback.mp4";
   job.error=null;
