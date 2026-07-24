@@ -1,5 +1,5 @@
 # SceneSponsor
-
+# DEMO LINK: https://drive.google.com/file/d/1XJpNKfwrwpMZ4atPieKtSz5wGLe91Kvk/view?usp=sharing
 > Advertising that becomes part of the content, not an interruption to it.
 
 **Built for Daytona HackSprint #5 with Braintrust — San Francisco, July 24, 2026.**
