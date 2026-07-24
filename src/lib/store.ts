@@ -8,6 +8,7 @@ import { qualityGate, rankCandidate } from "./job-logic";
 import { analyzeVideo } from "./fireworks";
 import { signedDownload, uploadArtifact } from "./supabase-storage";
 import { reportDaytona, traceBraintrust } from "./partner-telemetry";
+import { DEFAULT_COMPOSITE_ADJUSTMENT, parseCreatorAdjustment } from "./creator-adjustment";
 
 type State = { jobs: Map<string, JobView>; uploads: Map<string, string>; persistence: Map<string, Promise<void>> };
 const state = (globalThis as unknown as { __sceneSponsor?: State }).__sceneSponsor ?? { jobs: new Map(), uploads: new Map(), persistence: new Map() };
@@ -120,8 +121,13 @@ async function render(job: JobView) {
   const placement=job.candidates.find(candidate=>candidate.id===job.selectedCandidateId);if(!placement)throw new Error("No provider placement was selected for rendering");
   const xs=placement.quad.map(point=>point.x),ys=placement.quad.map(point=>point.y);const left=Math.round(Math.min(...xs)*720),top=Math.round(Math.min(...ys)*1280),width=Math.max(16,Math.round((Math.max(...xs)-Math.min(...xs))*720)),height=Math.max(16,Math.round((Math.max(...ys)-Math.min(...ys))*1280));
   const start=(placement.startMs/1000).toFixed(3),end=(placement.endMs/1000).toFixed(3);
-  const brandScale=placement.mode==="wall"?`scale=${width}:${height}`:`scale=-2:${height}`;const brandX=placement.mode==="wall"?String(left):`${left}+(${width}-overlay_w)/2`;
-  await run(binary,["-y","-i",source,"-i",asset,"-i",disclosure,"-filter_complex",`[0:v]${normalize}[base];[1:v]${brandScale}[brand];[2:v]scale=245:-1[disc];[base][brand]overlay=x='${brandX}':y=${top}:enable='between(t,${start},${end})':eof_action=repeat[placed];[placed][disc]overlay=x=22:y=1200:eof_action=repeat[out]`,"-map","[out]","-map","0:a?","-t",((job.sourceDurationMs||8000)/1000).toFixed(3),"-c:v","libx264","-preset","ultrafast","-threads","2","-pix_fmt","yuv420p","-c:a","aac","-movflags","+faststart",final]);
+  const adjustment=job.compositeAdjustment??DEFAULT_COMPOSITE_ADJUSTMENT;
+  const adjustedWidth=Math.max(8,Math.round(width*adjustment.scale)),adjustedHeight=Math.max(8,Math.round(height*adjustment.scale));
+  const brandScale=placement.mode==="wall"?`scale=${adjustedWidth}:${adjustedHeight}`:`scale=-2:${adjustedHeight}`;
+  const offsetX=Math.round(adjustment.offsetX*720),offsetY=Math.round(adjustment.offsetY*1280);
+  const brandX=`${left}+(${width}-overlay_w)/2+${offsetX}`,brandY=`${top}+(${height}-overlay_h)/2+${offsetY}`;
+  const brightness=(adjustment.brightness-1).toFixed(3),opacity=adjustment.opacity.toFixed(3);
+  await run(binary,["-y","-i",source,"-i",asset,"-i",disclosure,"-filter_complex",`[0:v]${normalize}[base];[1:v]${brandScale},eq=brightness=${brightness},format=rgba,colorchannelmixer=aa=${opacity}[brand];[2:v]scale=245:-1[disc];[base][brand]overlay=x='${brandX}':y='${brandY}':enable='between(t,${start},${end})':eof_action=repeat[placed];[placed][disc]overlay=x=22:y=1200:eof_action=repeat[out]`,"-map","[out]","-map","0:a?","-t",((job.sourceDurationMs||8000)/1000).toFixed(3),"-c:v","libx264","-preset","ultrafast","-threads","2","-pix_fmt","yuv420p","-c:a","aac","-movflags","+faststart",final]);
   if(remoteSource||process.env.VERCEL){if(!remoteSource)job.artifacts.vision=await uploadArtifact(`jobs/${job.id}/vision.mp4`,await readFile(vision),"video/mp4");job.artifacts.final=await uploadArtifact(`jobs/${job.id}/final.mp4`,await readFile(final),"video/mp4");}
   else {job.artifacts.vision = `/api/artifacts/${job.id}/vision`;job.artifacts.final = `/api/artifacts/${job.id}/final`;}
 }
@@ -176,5 +182,10 @@ export function decide(job: JobView, action: "approve"|"adjust"|"reject") {
 }
 export async function resumeRender(job: JobView) { try{await wait(400);advance(job,"rendering",76,"Rendering adjustment","Reusing analysis and campaign match.","Daytona");await render(job);await wait(350);advance(job,"awaiting_approval",96,"Adjustment evaluated","Quality gate passed. Creator decision required.","Braintrust")}finally{await flushJobPersistence(job.id)} }
 export function updateGeometry(job: JobView, quad: NormalizedQuad) { const c=job.candidates.find(x=>x.id===job.selectedCandidateId); if(c) c.quad=quad; return decide(job,"adjust"); }
+export function updateCompositeAdjustment(job: JobView, instruction: string) {
+  job.compositeAdjustment=parseCreatorAdjustment(instruction,job.compositeAdjustment);
+  advance(job,"tracking",62,"Creator adjustment received",`CopilotKit translated the creator request into bounded compositing controls: ${instruction.trim()}`,"CopilotKit");
+  return job;
+}
 export function sourceForUpload(id: string) { return state.uploads.get(id); }
 export function artifactPath(id: string, kind: string) { return path.join(ARTIFACTS, `${id}-${kind}.mp4`); }
