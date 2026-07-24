@@ -5,7 +5,7 @@ import { spawn } from "node:child_process";
 import type { AgentEvent, EvaluationResult, JobStage, JobView, NormalizedQuad } from "@/types";
 import { qualityGate, rankCandidate } from "./job-logic";
 import { analyzeVideo } from "./fireworks";
-import { uploadArtifact } from "./supabase-storage";
+import { signedDownload, uploadArtifact } from "./supabase-storage";
 
 type State = { jobs: Map<string, JobView>; uploads: Map<string, string> };
 const state = (globalThis as unknown as { __sceneSponsor?: State }).__sceneSponsor ?? { jobs: new Map(), uploads: new Map() };
@@ -84,10 +84,9 @@ async function render(job: JobView) {
   const outputDir=process.env.VERCEL?"/tmp":ARTIFACTS;
   await mkdir(outputDir, { recursive: true });
   const source = resolveSource(job);
-  const publicOrigin=process.env.VERCEL_URL?`https://${process.env.VERCEL_URL}`:"";
   let asset = path.join(process.cwd(), "public", "demo", "daytona.png");
   let disclosure = path.join(process.cwd(), "public", "demo", "disclosure.png");
-  if(process.env.VERCEL){asset=path.join(outputDir,"daytona.png");disclosure=path.join(outputDir,"disclosure.png");const [brandResponse,disclosureResponse]=await Promise.all([fetch(`${publicOrigin}/demo/daytona.png`),fetch(`${publicOrigin}/demo/disclosure.png`)]);if(!brandResponse.ok||!disclosureResponse.ok)throw new Error("Campaign artwork could not be loaded");await Promise.all([writeFile(asset,Buffer.from(await brandResponse.arrayBuffer())),writeFile(disclosure,Buffer.from(await disclosureResponse.arrayBuffer()))]);}
+  if(process.env.VERCEL){asset=path.join(outputDir,"daytona.png");disclosure=path.join(outputDir,"disclosure.png");const [brandUrl,disclosureUrl]=await Promise.all([signedDownload("campaigns/daytona.png"),signedDownload("campaigns/disclosure.png")]);const [brandResponse,disclosureResponse]=await Promise.all([fetch(brandUrl),fetch(disclosureUrl)]);if(!brandResponse.ok||!disclosureResponse.ok)throw new Error("Campaign artwork could not be loaded");await Promise.all([writeFile(asset,Buffer.from(await brandResponse.arrayBuffer())),writeFile(disclosure,Buffer.from(await disclosureResponse.arrayBuffer()))]);}
   const vision = path.join(outputDir, `${job.id}-vision.mp4`);
   const final = path.join(outputDir, `${job.id}-final.mp4`);
   const bundledBinary=path.join(process.cwd(),"node_modules","ffmpeg-static","ffmpeg");
