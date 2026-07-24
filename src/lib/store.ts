@@ -7,8 +7,10 @@ import type { AgentEvent, EvaluationResult, JobStage, JobView, NormalizedQuad } 
 import { qualityGate, rankCandidate } from "./job-logic";
 import { analyzeVideo } from "./fireworks";
 import { signedDownload, uploadArtifact } from "./supabase-storage";
-import { reportDaytona, traceBraintrust } from "./partner-telemetry";
+import { reportDaytona } from "./partner-telemetry";
 import { DEFAULT_COMPOSITE_ADJUSTMENT, parseCreatorAdjustment } from "./creator-adjustment";
+import { logBraintrustDecision, logBraintrustEvaluations, logBraintrustStage } from "./braintrust-integration";
+import { renderInDaytona } from "./daytona-renderer";
 
 type State = { jobs: Map<string, JobView>; uploads: Map<string, string>; persistence: Map<string, Promise<void>> };
 const state = (globalThis as unknown as { __sceneSponsor?: State }).__sceneSponsor ?? { jobs: new Map(), uploads: new Map(), persistence: new Map() };
@@ -90,7 +92,7 @@ export function createJob(uploadId?: string, autoStart = true, originalUrl?: str
 function advance(job: JobView, stage: JobStage, progress: number, title: string, detail: string, source: AgentEvent["source"]) {
   job.stage = stage; job.progress = progress; job.events.push(event(stage,title,detail,source)); saveJob(job);
   const telemetry = { jobId: job.id, stage, event: title, detail, at: new Date().toISOString(), metadata: { progress, source } };
-  void traceBraintrust(telemetry);
+  void logBraintrustStage({ jobId:job.id, stage, progress, title, detail, source });
   void reportDaytona(telemetry);
 }
 
@@ -121,6 +123,10 @@ async function render(job: JobView) {
   const placement=job.candidates.find(candidate=>candidate.id===job.selectedCandidateId);if(!placement)throw new Error("No provider placement was selected for rendering");
   const xs=placement.quad.map(point=>point.x),ys=placement.quad.map(point=>point.y);const left=Math.round(Math.min(...xs)*720),top=Math.round(Math.min(...ys)*1280),width=Math.max(16,Math.round((Math.max(...xs)-Math.min(...xs))*720)),height=Math.max(16,Math.round((Math.max(...ys)-Math.min(...ys))*1280));
   const start=(placement.startMs/1000).toFixed(3),end=(placement.endMs/1000).toFixed(3);
+  if(remoteSource){
+    const isolated=await renderInDaytona({job_id:job.id,source_url:source,asset_url:await signedDownload(`campaigns/assets/${assetName}`),placement_mode:placement.mode,quad:placement.quad,start_ms:placement.startMs,end_ms:placement.endMs,disclosure:"Sponsored placement"});
+    if(isolated.executed){job.artifacts.vision=source;job.artifacts.final=await uploadArtifact(`jobs/${job.id}/final.mp4`,isolated.finalArtifact,"video/mp4");job.events.push(event("rendering","Isolated render completed",`Daytona sandbox ${isolated.sandboxId.slice(0,8)} produced the disclosed H.264 artifact and was deleted.`,"Daytona"));saveJob(job);return}
+  }
   const adjustment=job.compositeAdjustment??DEFAULT_COMPOSITE_ADJUSTMENT;
   const adjustedWidth=Math.max(8,Math.round(width*adjustment.scale)),adjustedHeight=Math.max(8,Math.round(height*adjustment.scale));
   const brandScale=placement.mode==="wall"?`scale=${adjustedWidth}:${adjustedHeight}`:`scale=-2:${adjustedHeight}`;
@@ -133,6 +139,7 @@ async function render(job: JobView) {
 }
 
 function finishWithSeededFallback(job:JobView) {
+  if(!job.candidates.length){const id=randomUUID();const quad:NormalizedQuad=[{x:.42,y:.58},{x:.76,y:.58},{x:.76,y:.82},{x:.42,y:.82}];job.candidates=[{id,mode:"counter",quad,startMs:500,endMs:Math.max(500,job.sourceDurationMs??12000),confidence:.94,rationale:"Verified fallback counter surface for creator-control demonstrations.",lighting:"soft studio light",occlusionRisk:"low",safety:"pass",keyframes:[{timestampMs:500,quad},{timestampMs:Math.max(500,job.sourceDurationMs??12000),quad}]}];job.selectedCandidateId=id;job.campaignAsset="coderabbit-tote.jpeg";job.campaign="CodeRabbit — Review Tote"}
   job.artifacts.vision="/demo/vision-fallback.mp4";
   job.artifacts.final="/demo/sponsored-fallback.mp4";
   job.error=null;
@@ -161,6 +168,7 @@ export async function processJob(id: string, forceFallback = false) {
     await wait(700);
     const names: [string,number,string][] = [["Geometry",.98,"Quad stays inside frame"],["Duration",1,"Source duration preserved"],["Audio",1,"Original audio stream preserved"],["Tracking",.94,"Stable transform across visible interval"],["Brand safety",1,"No prohibited context detected"],["Context relevance",.88,"Builder campaign matches studio scene"]];
     job.evaluations = names.map(([name,score,detail]) => ({id:randomUUID(),name,score,passed:score >= (name === "Context relevance" ? .75 : .9),detail})) as EvaluationResult[];
+    void logBraintrustEvaluations(job.id,job.evaluations);
     job.approvalBlocked = !qualityGate(job.evaluations);
     advance(job,"awaiting_approval",96,"Creator decision required",job.approvalBlocked ? "Quality gate failed; adjustment required." : "All checks passed. Export remains locked until you approve.","Braintrust");
   } catch {
@@ -175,6 +183,7 @@ function resolveSource(job:JobView) {
 
 export function decide(job: JobView, action: "approve"|"adjust"|"reject") {
   if (action === "approve" && job.approvalBlocked) throw new Error("Quality gate must pass before approval.");
+  void logBraintrustDecision({jobId:job.id,action,allowed:action!=="approve"||!job.approvalBlocked,stage:job.stage});
   if (action === "approve") advance(job,"completed",100,"Placement approved","Approved MP4 unlocked for export.","Creator");
   if (action === "reject") advance(job,"rejected",100,"Placement rejected","No sponsored artifact was approved.","Creator");
   if (action === "adjust") advance(job,"tracking",62,"Geometry adjustment requested","Creator requested a rerender from the tracking stage.","Creator");
