@@ -52,11 +52,11 @@ function candidate(duration = 8000) {
   return { id: randomUUID(), mode:"wall" as const, quad, startMs:300, endMs:Math.min(duration, 8000), confidence:.91, rationale:"Stable, unobstructed wall plane with consistent lighting and clear separation from the subject.", lighting:"Soft daylight from camera-left", occlusionRisk:"low" as const, safety:"pass" as const };
 }
 
-export function createJob(uploadId?: string, autoStart = true, originalUrl?: string) {
+export function createJob(uploadId?: string, autoStart = true, originalUrl?: string, sourceDurationMs=8000) {
   const id = randomUUID();
   const source = originalUrl || (uploadId && state.uploads.get(uploadId) ? `/api/artifacts/source/${uploadId}` : "/demo/original.mp4");
   const providerMode = process.env.FIREWORKS_API_KEY && process.env.DAYTONA_API_KEY ? "connected" : "demo";
-  const job: JobView = { id, stage:"uploaded", progress:4, candidates:[], selectedCandidateId:null, artifacts:{ original:source }, evaluations:[], events:[event("uploaded", "Source secured", "Video validated and copied into a private job workspace.", "SceneSponsor")], error:null, campaign:"Daytona — Build Anywhere", approvalBlocked:true, providerMode };
+  const job: JobView = { id, stage:"uploaded", progress:4, candidates:[], selectedCandidateId:null, artifacts:{ original:source }, evaluations:[], events:[event("uploaded", "Source secured", "Video validated and copied into a private job workspace.", "SceneSponsor")], error:null, campaign:"Daytona — Build Anywhere", approvalBlocked:true, providerMode, sourceDurationMs:Math.max(5000,Math.min(12000,sourceDurationMs)) };
   saveJob(job);
   if (autoStart) void processJob(id);
   return job;
@@ -95,7 +95,7 @@ async function render(job: JobView) {
   const normalize = "scale=720:1280:force_original_aspect_ratio=increase,crop=720:1280,setsar=1";
   if(remoteSource)job.artifacts.vision=source;
   else await run(binary,["-y","-i",source,"-vf",`${normalize},drawbox=x=360:y=255:w=270:h=345:color=0xD8FF4F@0.92:t=5,drawbox=x=45:y=785:w=250:h=250:color=0x848A91@0.8:t=3`,"-map","0:v:0","-map","0:a?","-c:v","libx264","-preset","ultrafast","-threads","2","-pix_fmt","yuv420p","-c:a","aac","-shortest","-movflags","+faststart",vision]);
-  await run(binary,["-y","-i",source,"-loop","1","-i",asset,"-loop","1","-i",disclosure,"-filter_complex",`[0:v]${normalize}[base];[1:v]scale=225:-1[brand];[2:v]scale=245:-1[disc];[base][brand]overlay=x=382:y=320:enable='between(t,0.3,8)'[placed];[placed][disc]overlay=x=22:y=1200[out]`,"-map","[out]","-map","0:a?","-c:v","libx264","-preset","ultrafast","-threads","2","-pix_fmt","yuv420p","-c:a","aac","-shortest","-movflags","+faststart",final]);
+  await run(binary,["-y","-i",source,"-loop","1","-i",asset,"-loop","1","-i",disclosure,"-filter_complex",`[0:v]${normalize}[base];[1:v]scale=225:-1[brand];[2:v]scale=245:-1[disc];[base][brand]overlay=x=382:y=320:enable='between(t,0.3,8)'[placed];[placed][disc]overlay=x=22:y=1200[out]`,"-map","[out]","-map","0:a?","-t",((job.sourceDurationMs||8000)/1000).toFixed(3),"-c:v","libx264","-preset","ultrafast","-threads","2","-pix_fmt","yuv420p","-c:a","aac","-movflags","+faststart",final]);
   if(remoteSource){job.artifacts.final=await uploadArtifact(`jobs/${job.id}/final.mp4`,await readFile(final),"video/mp4");}
   else {job.artifacts.vision = `/api/artifacts/${job.id}/vision`;job.artifacts.final = `/api/artifacts/${job.id}/final`;}
 }

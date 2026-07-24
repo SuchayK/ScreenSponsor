@@ -16,4 +16,5 @@ export interface JobView {
   evaluations: EvaluationResult[]; events: AgentEvent[];
   error: { code: string; message: string; retryable: boolean } | null;
   campaign: string; approvalBlocked: boolean; providerMode: "demo" | "connected";
+  sourceDurationMs?: number;
 }
