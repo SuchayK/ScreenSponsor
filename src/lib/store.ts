@@ -85,15 +85,16 @@ async function render(job: JobView) {
   await mkdir(outputDir, { recursive: true });
   const source = resolveSource(job);
   const publicOrigin=process.env.VERCEL_URL?`https://${process.env.VERCEL_URL}`:"";
-  const asset = process.env.VERCEL?`${publicOrigin}/demo/daytona.png`:path.join(process.cwd(), "public", "demo", "daytona.png");
-  const disclosure = process.env.VERCEL?`${publicOrigin}/demo/disclosure.png`:path.join(process.cwd(), "public", "demo", "disclosure.png");
+  let asset = path.join(process.cwd(), "public", "demo", "daytona.png");
+  let disclosure = path.join(process.cwd(), "public", "demo", "disclosure.png");
+  if(process.env.VERCEL){asset=path.join(outputDir,"daytona.png");disclosure=path.join(outputDir,"disclosure.png");const [brandResponse,disclosureResponse]=await Promise.all([fetch(`${publicOrigin}/demo/daytona.png`),fetch(`${publicOrigin}/demo/disclosure.png`)]);if(!brandResponse.ok||!disclosureResponse.ok)throw new Error("Campaign artwork could not be loaded");await Promise.all([writeFile(asset,Buffer.from(await brandResponse.arrayBuffer())),writeFile(disclosure,Buffer.from(await disclosureResponse.arrayBuffer()))]);}
   const vision = path.join(outputDir, `${job.id}-vision.mp4`);
   const final = path.join(outputDir, `${job.id}-final.mp4`);
   const bundledBinary=path.join(process.cwd(),"node_modules","ffmpeg-static","ffmpeg");
   const binary=process.env.NODE_ENV==="production"||process.env.VERCEL?bundledBinary:"ffmpeg";
   const normalize = "scale=720:1280:force_original_aspect_ratio=increase,crop=720:1280,setsar=1";
-  const graph=`[0:v]${normalize},split=2[visionbase][finalbase];[visionbase]drawbox=x=360:y=255:w=270:h=345:color=0xD8FF4F@0.92:t=5,drawbox=x=45:y=785:w=250:h=250:color=0x848A91@0.8:t=3[visionout];[1:v]scale=225:-1[brand];[2:v]scale=245:-1[disc];[finalbase][brand]overlay=x=382:y=320:enable='between(t,0.3,8)'[placed];[placed][disc]overlay=x=22:y=1200[finalout]`;
-  await run(binary,["-y","-i",source,"-loop","1","-i",asset,"-loop","1","-i",disclosure,"-filter_complex",graph,"-map","[visionout]","-map","0:a?","-c:v","libx264","-preset","ultrafast","-threads","2","-pix_fmt","yuv420p","-c:a","aac","-shortest","-movflags","+faststart",vision,"-map","[finalout]","-map","0:a?","-c:v","libx264","-preset","ultrafast","-threads","2","-pix_fmt","yuv420p","-c:a","aac","-shortest","-movflags","+faststart",final]);
+  await run(binary,["-y","-i",source,"-vf",`${normalize},drawbox=x=360:y=255:w=270:h=345:color=0xD8FF4F@0.92:t=5,drawbox=x=45:y=785:w=250:h=250:color=0x848A91@0.8:t=3`,"-map","0:v:0","-map","0:a?","-c:v","libx264","-preset","ultrafast","-threads","2","-pix_fmt","yuv420p","-c:a","aac","-shortest","-movflags","+faststart",vision]);
+  await run(binary,["-y","-i",source,"-loop","1","-i",asset,"-loop","1","-i",disclosure,"-filter_complex",`[0:v]${normalize}[base];[1:v]scale=225:-1[brand];[2:v]scale=245:-1[disc];[base][brand]overlay=x=382:y=320:enable='between(t,0.3,8)'[placed];[placed][disc]overlay=x=22:y=1200[out]`,"-map","[out]","-map","0:a?","-c:v","libx264","-preset","ultrafast","-threads","2","-pix_fmt","yuv420p","-c:a","aac","-shortest","-movflags","+faststart",final]);
   if(remoteSource){job.artifacts.vision=await uploadArtifact(`jobs/${job.id}/vision.mp4`,await readFile(vision),"video/mp4");job.artifacts.final=await uploadArtifact(`jobs/${job.id}/final.mp4`,await readFile(final),"video/mp4");}
   else {job.artifacts.vision = `/api/artifacts/${job.id}/vision`;job.artifacts.final = `/api/artifacts/${job.id}/final`;}
 }
