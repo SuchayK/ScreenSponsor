@@ -2,13 +2,15 @@ import { mkdir, writeFile, unlink, readFile } from "node:fs/promises";
 import path from "node:path";
 import { randomUUID } from "node:crypto";
 import { spawn } from "node:child_process";
+import { createClient } from "@supabase/supabase-js";
 import type { AgentEvent, EvaluationResult, JobStage, JobView, NormalizedQuad } from "@/types";
 import { qualityGate, rankCandidate } from "./job-logic";
 import { analyzeVideo } from "./fireworks";
 import { signedDownload, uploadArtifact } from "./supabase-storage";
 
-type State = { jobs: Map<string, JobView>; uploads: Map<string, string> };
-const state = (globalThis as unknown as { __sceneSponsor?: State }).__sceneSponsor ?? { jobs: new Map(), uploads: new Map() };
+type State = { jobs: Map<string, JobView>; uploads: Map<string, string>; persistence: Map<string, Promise<void>> };
+const state = (globalThis as unknown as { __sceneSponsor?: State }).__sceneSponsor ?? { jobs: new Map(), uploads: new Map(), persistence: new Map() };
+(state as State).persistence ??= new Map();
 (globalThis as unknown as { __sceneSponsor?: State }).__sceneSponsor = state;
 
 const DATA = path.join(process.cwd(), ".data");
@@ -16,8 +18,29 @@ const ARTIFACTS = path.join(DATA, "artifacts");
 const wait = (ms: number) => new Promise(r => setTimeout(r, ms));
 const event = (stage: JobStage, title: string, detail: string, source: AgentEvent["source"]): AgentEvent => ({ id: randomUUID(), stage, title, detail, source, at: new Date().toISOString() });
 
-export function getJob(id: string) { return state.jobs.get(id); }
-export function saveJob(job: JobView) { state.jobs.set(job.id, job); return job; }
+function database() {
+  const url=process.env.NEXT_PUBLIC_SUPABASE_URL; const key=process.env.SUPABASE_SERVICE_ROLE_KEY;
+  return url&&key?createClient(url,key,{auth:{persistSession:false,autoRefreshToken:false}}):null;
+}
+async function persistJob(job:JobView) {
+  const client=database(); if(!client)return;
+  const {error}=await client.from("jobs").upsert({id:job.id,demo_session:"scenesponsor-demo",stage:job.stage,progress:job.progress,source_path:job.artifacts.original||"",error:job.error,updated_at:new Date().toISOString(),snapshot:job},{onConflict:"id"});
+  if(error&&error.code!=="PGRST205"&&!/relation .*jobs.* does not exist|could not find the table/i.test(error.message))console.error("SceneSponsor job persistence failed:",error.message);
+}
+function queuePersistence(job:JobView) {
+  const snapshot=structuredClone(job); const previous=state.persistence.get(job.id)??Promise.resolve();
+  const next=previous.catch(()=>undefined).then(()=>persistJob(snapshot)).finally(()=>{if(state.persistence.get(job.id)===next)state.persistence.delete(job.id)});
+  state.persistence.set(job.id,next);
+}
+export async function flushJobPersistence(id:string) { await state.persistence.get(id)?.catch(()=>undefined); }
+export async function getJob(id: string) {
+  const local=state.jobs.get(id); if(local)return local;
+  const client=database(); if(!client)return undefined;
+  const {data,error}=await client.from("jobs").select("snapshot").eq("id",id).maybeSingle();
+  if(error||!data?.snapshot)return undefined;
+  const job=data.snapshot as JobView; state.jobs.set(id,job); return job;
+}
+export function saveJob(job: JobView) { state.jobs.set(job.id, job); queuePersistence(job); return job; }
 export async function saveUpload(file: File) {
   await mkdir(path.join(DATA, "uploads"), { recursive: true });
   const id = randomUUID();
@@ -101,11 +124,11 @@ async function render(job: JobView) {
 }
 
 export async function processJob(id: string) {
-  const job = getJob(id); if (!job) return;
+  const job = await getJob(id); if (!job) return;
   try {
     await wait(450); advance(job,"analyzing",16,"Reading the scene",job.providerMode==="connected"?"Fireworks is inspecting composition, people, text, and available surfaces.":"Local verified planner is inspecting composition and available surfaces.","Fireworks");
     if (process.env.FIREWORKS_API_KEY) {
-      try { const planned=await analyzeVideo(resolveSource(job)); job.candidates=planned.map(c=>({...c,id:randomUUID()})).filter(c=>c.safety!=="reject"&&rankCandidate(c)>=.5).sort((a,b)=>rankCandidate(b)-rankCandidate(a)); }
+      try { const planned=await analyzeVideo(resolveSource(job),job.sourceDurationMs); job.candidates=planned.map(c=>({...c,id:randomUUID()})).filter(c=>c.safety!=="reject"&&rankCandidate(c)>=.5).sort((a,b)=>rankCandidate(b)-rankCandidate(a)); }
       catch(error){job.providerMode="demo";job.events.push(event("analyzing","Video model fallback",error instanceof Error?error.message:"Fireworks analysis was unavailable; continuing with deterministic geometry.","Fireworks"));}
     }
     if(!job.candidates.length)job.candidates = [candidate(job.sourceDurationMs), {...candidate(job.sourceDurationMs), id:randomUUID(), mode:"counter", confidence:.73, occlusionRisk:"medium", rationale:"Counter edge is usable but partially leaves frame."}];
@@ -123,22 +146,22 @@ export async function processJob(id: string) {
     advance(job,"awaiting_approval",96,"Creator decision required",job.approvalBlocked ? "Quality gate failed; adjustment required." : "All checks passed. Export remains locked until you approve.","Braintrust");
   } catch (error) {
     job.stage="failed"; job.error={code:"RENDER_FAILED",message:error instanceof Error ? error.message : "Render failed",retryable:true}; job.events.push(event("failed","Render stopped",job.error.message,"SceneSponsor")); saveJob(job);
-  }
+  } finally { await flushJobPersistence(id); }
 }
 
 function resolveSource(job:JobView) {
   if(job.artifacts.original?.startsWith("http"))return job.artifacts.original;
-  return job.artifacts.original?.startsWith("/api/artifacts/source/") ? state.uploads.get(job.artifacts.original.split("/").pop()!)! : path.join(process.cwd(),"public","demo","original.mp4");
+  return job.artifacts.original?.startsWith("/api/artifacts/source/") ? state.uploads.get(job.artifacts.original.split("/").pop()!)! : path.join(process.cwd(),"public","demo","seeded-12s.mp4");
 }
 
 export function decide(job: JobView, action: "approve"|"adjust"|"reject") {
   if (action === "approve" && job.approvalBlocked) throw new Error("Quality gate must pass before approval.");
   if (action === "approve") advance(job,"completed",100,"Placement approved","Approved MP4 unlocked for export.","Creator");
   if (action === "reject") advance(job,"rejected",100,"Placement rejected","No sponsored artifact was approved.","Creator");
-  if (action === "adjust") { advance(job,"tracking",62,"Geometry adjusted","Creator correction accepted; resuming at tracking.","Creator"); void resumeRender(job); }
+  if (action === "adjust") advance(job,"tracking",62,"Geometry adjustment requested","Creator requested a rerender from the tracking stage.","Creator");
   return job;
 }
-async function resumeRender(job: JobView) { await wait(400); advance(job,"rendering",76,"Rendering adjustment","Reusing analysis and campaign match.","Daytona"); await render(job); await wait(350); advance(job,"awaiting_approval",96,"Adjustment evaluated","Quality gate passed. Creator decision required.","Braintrust"); }
+export async function resumeRender(job: JobView) { try{await wait(400);advance(job,"rendering",76,"Rendering adjustment","Reusing analysis and campaign match.","Daytona");await render(job);await wait(350);advance(job,"awaiting_approval",96,"Adjustment evaluated","Quality gate passed. Creator decision required.","Braintrust")}finally{await flushJobPersistence(job.id)} }
 export function updateGeometry(job: JobView, quad: NormalizedQuad) { const c=job.candidates.find(x=>x.id===job.selectedCandidateId); if(c) c.quad=quad; return decide(job,"adjust"); }
 export function sourceForUpload(id: string) { return state.uploads.get(id); }
 export function artifactPath(id: string, kind: string) { return path.join(ARTIFACTS, `${id}-${kind}.mp4`); }
