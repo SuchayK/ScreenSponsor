@@ -1,7 +1,7 @@
 {
   "video": "/reel.mp4",
   "fpsAnalyzed": 4,
-  "generatedAt": "2026-07-24T18:56:41.945Z",
+  "generatedAt": "2026-07-24T19:29:26.891Z",
   "qualityThreshold": 80,
   "placements": [
     {
@@ -12,205 +12,23 @@
       "endTime": 6.75,
       "anchorDescription": "bottom-center of existing pink tumbler on table surface",
       "anchor": {
-        "x": 0.63,
-        "y": 0.66
+        "x": 0.8820746316818906,
+        "y": 0.6233717077470233
       },
       "boxes": [
         {
           "timestamp": 0,
-          "x": 0.6,
-          "y": 0.56,
+          "x": 0.8529259030895197,
+          "y": 0.5263831899535311,
           "width": 0.06,
           "height": 0.1
-        },
-        {
-          "timestamp": 0.25,
-          "x": 0.6,
-          "y": 0.56,
-          "width": 0.06,
-          "height": 0.1
-        },
-        {
-          "timestamp": 0.5,
-          "x": 0.6,
-          "y": 0.56,
-          "width": 0.06,
-          "height": 0.1
-        },
-        {
-          "timestamp": 0.75,
-          "x": 0.6,
-          "y": 0.56,
-          "width": 0.06,
-          "height": 0.1
-        },
-        {
-          "timestamp": 1,
-          "x": 0.6,
-          "y": 0.56,
-          "width": 0.06,
-          "height": 0.1
-        },
-        {
-          "timestamp": 1.25,
-          "x": 0.6,
-          "y": 0.56,
-          "width": 0.06,
-          "height": 0.1
-        },
-        {
-          "timestamp": 1.5,
-          "x": 0.6,
-          "y": 0.56,
-          "width": 0.06,
-          "height": 0.1
-        },
-        {
-          "timestamp": 1.75,
-          "x": 0.6,
-          "y": 0.56,
-          "width": 0.06,
-          "height": 0.1
-        },
-        {
-          "timestamp": 2,
-          "x": 0.6,
-          "y": 0.56,
-          "width": 0.06,
-          "height": 0.1
-        },
-        {
-          "timestamp": 2.25,
-          "x": 0.6,
-          "y": 0.56,
-          "width": 0.06,
-          "height": 0.1
-        },
-        {
-          "timestamp": 2.5,
-          "x": 0.6,
-          "y": 0.56,
-          "width": 0.06,
-          "height": 0.1
-        },
-        {
-          "timestamp": 2.75,
-          "x": 0.6,
-          "y": 0.56,
-          "width": 0.06,
-          "height": 0.1
-        },
-        {
-          "timestamp": 3,
-          "x": 0.6,
-          "y": 0.56,
-          "width": 0.06,
-          "height": 0.1
-        },
-        {
-          "timestamp": 3.25,
-          "x": 0.6,
-          "y": 0.56,
-          "width": 0.06,
-          "height": 0.1
-        },
-        {
-          "timestamp": 3.5,
-          "x": 0.6,
-          "y": 0.56,
-          "width": 0.06,
-          "height": 0.1
-        },
-        {
-          "timestamp": 3.75,
-          "x": 0.6,
-          "y": 0.56,
-          "width": 0.06,
-          "height": 0.1
-        },
-        {
-          "timestamp": 4,
-          "x": 0.6,
-          "y": 0.53,
-          "width": 0.07,
-          "height": 0.14
-        },
-        {
-          "timestamp": 4.25,
-          "x": 0.6,
-          "y": 0.53,
-          "width": 0.07,
-          "height": 0.14
-        },
-        {
-          "timestamp": 4.5,
-          "x": 0.6,
-          "y": 0.53,
-          "width": 0.07,
-          "height": 0.14
-        },
-        {
-          "timestamp": 4.75,
-          "x": 0.6,
-          "y": 0.53,
-          "width": 0.07,
-          "height": 0.14
-        },
-        {
-          "timestamp": 5,
-          "x": 0.6,
-          "y": 0.53,
-          "width": 0.07,
-          "height": 0.14
-        },
-        {
-          "timestamp": 5.25,
-          "x": 0.6,
-          "y": 0.53,
-          "width": 0.07,
-          "height": 0.14
-        },
-        {
-          "timestamp": 5.5,
-          "x": 0.6,
-          "y": 0.53,
-          "width": 0.07,
-          "height": 0.14
-        },
-        {
-          "timestamp": 5.75,
-          "x": 0.6,
-          "y": 0.53,
-          "width": 0.07,
-          "height": 0.14
-        },
-        {
-          "timestamp": 6,
-          "x": 0.6,
-          "y": 0.53,
-          "width": 0.07,
-          "height": 0.14
-        },
-        {
-          "timestamp": 6.25,
-          "x": 0.6,
-          "y": 0.53,
-          "width": 0.07,
-          "height": 0.14
-        },
-        {
-          "timestamp": 6.5,
-          "x": 0.6,
-          "y": 0.53,
-          "width": 0.07,
-          "height": 0.14
         },
         {
           "timestamp": 6.75,
-          "x": 0.6,
-          "y": 0.53,
-          "width": 0.07,
-          "height": 0.14
+          "x": 0.8529259030895197,
+          "y": 0.5263831899535311,
+          "width": 0.06,
+          "height": 0.1
         }
       ],
       "confidence": 0.93,
@@ -229,7 +47,7 @@
       "placementType": "add",
       "targetObject": null,
       "startTime": 0,
-      "endTime": 3.75,
+      "endTime": 6.75,
       "anchorDescription": "center of blank wall area above the subject",
       "anchor": {
         "x": 0.3,
@@ -244,105 +62,7 @@
           "height": 0.2
         },
         {
-          "timestamp": 0.25,
-          "x": 0.18,
-          "y": 0.15,
-          "width": 0.24,
-          "height": 0.2
-        },
-        {
-          "timestamp": 0.5,
-          "x": 0.18,
-          "y": 0.15,
-          "width": 0.24,
-          "height": 0.2
-        },
-        {
-          "timestamp": 0.75,
-          "x": 0.18,
-          "y": 0.15,
-          "width": 0.24,
-          "height": 0.2
-        },
-        {
-          "timestamp": 1,
-          "x": 0.18,
-          "y": 0.15,
-          "width": 0.24,
-          "height": 0.2
-        },
-        {
-          "timestamp": 1.25,
-          "x": 0.18,
-          "y": 0.15,
-          "width": 0.24,
-          "height": 0.2
-        },
-        {
-          "timestamp": 1.5,
-          "x": 0.18,
-          "y": 0.15,
-          "width": 0.24,
-          "height": 0.2
-        },
-        {
-          "timestamp": 1.75,
-          "x": 0.18,
-          "y": 0.15,
-          "width": 0.24,
-          "height": 0.2
-        },
-        {
-          "timestamp": 2,
-          "x": 0.18,
-          "y": 0.15,
-          "width": 0.24,
-          "height": 0.2
-        },
-        {
-          "timestamp": 2.25,
-          "x": 0.18,
-          "y": 0.15,
-          "width": 0.24,
-          "height": 0.2
-        },
-        {
-          "timestamp": 2.5,
-          "x": 0.18,
-          "y": 0.15,
-          "width": 0.24,
-          "height": 0.2
-        },
-        {
-          "timestamp": 2.75,
-          "x": 0.18,
-          "y": 0.15,
-          "width": 0.24,
-          "height": 0.2
-        },
-        {
-          "timestamp": 3,
-          "x": 0.18,
-          "y": 0.15,
-          "width": 0.24,
-          "height": 0.2
-        },
-        {
-          "timestamp": 3.25,
-          "x": 0.18,
-          "y": 0.15,
-          "width": 0.24,
-          "height": 0.2
-        },
-        {
-          "timestamp": 3.5,
-          "x": 0.18,
-          "y": 0.15,
-          "width": 0.24,
-          "height": 0.2
-        },
-        {
-          "timestamp": 3.75,
+          "timestamp": 6.75,
           "x": 0.18,
           "y": 0.15,
           "width": 0.24,
@@ -363,7 +83,7 @@
       "category": "beverage",
       "placementType": "add",
       "targetObject": null,
-      "startTime": 9,
+      "startTime": 7,
       "endTime": 13.75,
       "anchorDescription": "empty wooden mantelpiece surface to the left of the candles",
       "anchor": {
@@ -372,144 +92,18 @@
       },
       "boxes": [
         {
-          "timestamp": 9,
-          "x": 0.22,
-          "y": 0.45,
-          "width": 0.06,
-          "height": 0.1
-        },
-        {
-          "timestamp": 9.25,
-          "x": 0.22,
-          "y": 0.45,
-          "width": 0.06,
-          "height": 0.1
-        },
-        {
-          "timestamp": 9.5,
-          "x": 0.22,
-          "y": 0.45,
-          "width": 0.06,
-          "height": 0.1
-        },
-        {
-          "timestamp": 9.75,
-          "x": 0.22,
-          "y": 0.45,
-          "width": 0.06,
-          "height": 0.1
-        },
-        {
-          "timestamp": 10,
-          "x": 0.22,
-          "y": 0.45,
-          "width": 0.06,
-          "height": 0.1
-        },
-        {
-          "timestamp": 10.25,
-          "x": 0.22,
-          "y": 0.45,
-          "width": 0.06,
-          "height": 0.1
-        },
-        {
-          "timestamp": 10.5,
-          "x": 0.22,
-          "y": 0.45,
-          "width": 0.06,
-          "height": 0.1
-        },
-        {
-          "timestamp": 10.75,
-          "x": 0.22,
-          "y": 0.45,
-          "width": 0.06,
-          "height": 0.1
-        },
-        {
-          "timestamp": 11,
-          "x": 0.22,
-          "y": 0.45,
-          "width": 0.06,
-          "height": 0.1
-        },
-        {
-          "timestamp": 11.25,
-          "x": 0.22,
-          "y": 0.45,
-          "width": 0.06,
-          "height": 0.1
-        },
-        {
-          "timestamp": 11.5,
-          "x": 0.22,
-          "y": 0.45,
-          "width": 0.06,
-          "height": 0.1
-        },
-        {
-          "timestamp": 11.75,
-          "x": 0.22,
-          "y": 0.45,
-          "width": 0.06,
-          "height": 0.1
-        },
-        {
-          "timestamp": 12,
-          "x": 0.22,
-          "y": 0.45,
-          "width": 0.06,
-          "height": 0.1
-        },
-        {
-          "timestamp": 12.25,
-          "x": 0.22,
-          "y": 0.45,
-          "width": 0.06,
-          "height": 0.1
-        },
-        {
-          "timestamp": 12.5,
-          "x": 0.22,
-          "y": 0.45,
-          "width": 0.06,
-          "height": 0.1
-        },
-        {
-          "timestamp": 12.75,
-          "x": 0.22,
-          "y": 0.45,
-          "width": 0.06,
-          "height": 0.1
-        },
-        {
-          "timestamp": 13,
-          "x": 0.21,
-          "y": 0.55,
-          "width": 0.07,
-          "height": 0.09
-        },
-        {
-          "timestamp": 13.25,
-          "x": 0.21,
-          "y": 0.55,
-          "width": 0.07,
-          "height": 0.09
-        },
-        {
-          "timestamp": 13.5,
-          "x": 0.21,
-          "y": 0.56,
-          "width": 0.07,
-          "height": 0.09
+          "timestamp": 7,
+          "x": 0.21186359999999999,
+          "y": 0.531364,
+          "width": 0.0681364,
+          "height": 0.0918636
         },
         {
           "timestamp": 13.75,
-          "x": 0.22,
-          "y": 0.56,
-          "width": 0.07,
-          "height": 0.09
+          "x": 0.21186359999999999,
+          "y": 0.531364,
+          "width": 0.0681364,
+          "height": 0.0918636
         }
       ],
       "confidence": 0.905,
@@ -522,6 +116,74 @@
         4
       ],
       "overallScore": 90
+    },
+    {
+      "category": "poster",
+      "placementType": "add",
+      "targetObject": null,
+      "startTime": 13.96,
+      "endTime": 20,
+      "anchorDescription": "",
+      "anchor": {
+        "x": 0.2695030351697206,
+        "y": 0.15393696745525925
+      },
+      "boxes": [
+        {
+          "timestamp": 13.96,
+          "x": 0.15027569062047424,
+          "y": 0.0554276970236924,
+          "width": 0.23521753080993313,
+          "height": 0.19639819892359262
+        },
+        {
+          "timestamp": 20,
+          "x": 0.15027569062047424,
+          "y": 0.0554276970236924,
+          "width": 0.23521753080993313,
+          "height": 0.19639819892359262
+        }
+      ],
+      "confidence": 1,
+      "occlusionRisk": 0,
+      "cameraMotion": "low",
+      "reason": "manually placed",
+      "id": "f6e3137f-2cd4-40cc-ab1a-5a12e71b58fd",
+      "overallScore": 100
+    },
+    {
+      "category": "beverage",
+      "placementType": "add",
+      "targetObject": null,
+      "startTime": 14,
+      "endTime": 20,
+      "anchorDescription": "",
+      "anchor": {
+        "x": 0.625947134882377,
+        "y": 0.46729366110270276
+      },
+      "boxes": [
+        {
+          "timestamp": 14,
+          "x": 0.5696844666296779,
+          "y": 0.35617808690371006,
+          "width": 0.11142257402350156,
+          "height": 0.11115557344861755
+        },
+        {
+          "timestamp": 20,
+          "x": 0.5696844666296779,
+          "y": 0.35617808690371006,
+          "width": 0.11142257402350156,
+          "height": 0.11115557344861755
+        }
+      ],
+      "confidence": 1,
+      "occlusionRisk": 0,
+      "cameraMotion": "low",
+      "reason": "manually placed",
+      "id": "a32da996-4d7f-4f3c-9a3a-6523b5e2ec36",
+      "overallScore": 100
     }
   ]
 }

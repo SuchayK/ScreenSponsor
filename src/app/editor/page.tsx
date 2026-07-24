@@ -151,6 +151,22 @@ export default function EditorPage() {
   }
 
   /**
+   * AI-generated placements come in with a keyframe at every analyzed frame (all identical), so
+   * editing just one of them leaves the rest pulling the box back to the old position anywhere
+   * else in the duration. This collapses everything to a single shape for the whole active window.
+   */
+  function applyToEntireDuration() {
+    if (!selectedPlacement) return;
+    const shape = { x: draftBox.x, y: draftBox.y, width: draftBox.width, height: draftBox.height };
+    const { startTime, endTime } = selectedPlacement;
+    const boxes =
+      startTime === endTime
+        ? [{ timestamp: startTime, ...shape }]
+        : [{ timestamp: startTime, ...shape }, { timestamp: endTime, ...shape }];
+    updateSelected({ boxes });
+  }
+
+  /**
    * Most placements are just "this box, active from A to B" with no motion. For that common
    * case (<=2 keyframes), changing the time range rebuilds a static pair of keyframes from the
    * current box shape rather than making the user re-capture keyframes by hand. Once someone has
@@ -435,14 +451,23 @@ export default function EditorPage() {
                 ))}
               </div>
               <button
-                onClick={captureKeyframe}
+                onClick={applyToEntireDuration}
                 className="mt-2 rounded bg-emerald-400 px-2 py-1.5 font-semibold text-black hover:bg-emerald-300"
               >
-                Add/update keyframe here
+                Apply this box to the entire duration
               </button>
               <p className="mt-1 text-[11px] text-white/40">
-                Only needed if the box should move over time -- for a static box, just set the
-                time range above.
+                Use this for a normal, static box -- it replaces every keyframe with this one
+                shape for the whole active window.
+              </p>
+              <button
+                onClick={captureKeyframe}
+                className="mt-2 rounded bg-white/10 px-2 py-1.5 text-xs hover:bg-white/20"
+              >
+                Advanced: add/update keyframe at this instant only
+              </button>
+              <p className="mt-1 text-[11px] text-white/40">
+                Only for a box that should move over time -- leaves every other keyframe as-is.
               </p>
             </div>
 
