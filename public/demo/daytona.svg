@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="300" viewBox="0 0 600 300">
+  <rect width="600" height="300" rx="24" fill="#5B36F5"/>
+  <path d="M0 260 L600 180 L600 300 L0 300Z" fill="#D8FF4F" opacity=".95"/>
+  <text x="58" y="198" fill="white" font-family="Arial, sans-serif" font-weight="800" font-style="italic" font-size="170">D</text>
+  <text x="224" y="174" fill="white" font-family="Arial, sans-serif" font-weight="700" font-size="52" letter-spacing="3">DAYTONA</text>
+</svg>
