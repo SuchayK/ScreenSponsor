@@ -2,6 +2,8 @@
 
 > Advertising that becomes part of the content, not an interruption to it.
 
+**Built for Daytona HackSprint #5 with Braintrust — San Francisco, July 24, 2026.**
+
 SceneSponsor is an advertising platform concept that places relevant branded products naturally inside existing short-form videos and digital content. Instead of stopping a viewer's experience with a dedicated ad, SceneSponsor turns suitable surfaces and spaces within the content into tasteful, measurable sponsorship opportunities.
 
 A blank wall could feature a Trader Joe's bag. A kitchen counter could hold a Chipotle bag. A desk, shelf, table, or background could become a natural place for a brand to appear without requiring the creator to reshoot, read a script, or interrupt their audience.
@@ -31,6 +33,22 @@ The result is brand exposure that feels contextual rather than disruptive, while
 4. **The product is integrated.** The branded object is positioned and rendered to fit the scene naturally.
 5. **The creator reviews and approves.** Nothing is published without creator control.
 6. **Performance is measured.** Brands receive placement-level reporting, and creators receive sponsorship revenue.
+
+## The SceneSponsor Agent
+
+SceneSponsor is designed as an autonomous, human-supervised advertising agent. It does more than generate an image overlay: it reasons about whether a placement belongs in a scene, which campaign is appropriate, how the object should appear, and whether the result is safe to present for approval.
+
+For every piece of content, the agent:
+
+1. Inspects the video and identifies stable, visible placement zones.
+2. Understands the scene, creator context, and potential brand-safety risks.
+3. Selects a compatible product from eligible campaigns.
+4. Plans position, scale, perspective, lighting, occlusion, and duration.
+5. Produces a composited preview in an isolated rendering environment.
+6. Evaluates visual quality, disclosure, and policy compliance.
+7. Explains its decision and requests creator approval before export.
+
+The agent can reject a campaign or decline to modify a scene when a placement would be misleading, unsafe, visually poor, or inconsistent with creator preferences.
 
 ## Example Placements
 
@@ -105,6 +123,61 @@ SceneSponsor can generate revenue through a percentage of each completed sponsor
 
 The core model is aligned: SceneSponsor earns when creators earn and brands receive approved placements.
 
+## Hackathon Architecture
+
+The HackSprint prototype is intended to demonstrate a complete agent loop rather than a UI-only mockup:
+
+```text
+Creator video
+     │
+     ▼
+Scene analysis ──► Campaign matching ──► Placement planning
+                                               │
+                                               ▼
+Creator approval ◄── Safety evaluation ◄── Isolated render
+     │
+     ▼
+Exported sponsored video + decision trace
+```
+
+### Partner technology strategy
+
+| Technology | Role in SceneSponsor |
+| --- | --- |
+| **Daytona** | Creates isolated, reproducible workspaces for video analysis and rendering jobs. |
+| **Braintrust** | Traces agent decisions and evaluates placement quality, relevance, safety, and consistency. |
+| **Fireworks AI** | Powers fast multimodal scene understanding, campaign reasoning, and placement planning. |
+| **CopilotKit** | Provides the human-in-the-loop workspace where creators review the agent's reasoning and approve or reject placements. |
+| **WorkOS** | Supports secure team and organization access for creators, brands, and agencies. |
+| **CodeRabbit** | Reviews the implementation and helps maintain code quality during rapid iteration. |
+
+## Evaluation Strategy
+
+The prototype should be evaluated on observable outcomes rather than subjective appearance alone:
+
+- **Placement relevance:** Does the selected product make sense in the scene?
+- **Visual realism:** Does the object match perspective, lighting, scale, motion, and occlusion?
+- **Brand safety:** Is the surrounding content appropriate for the selected campaign?
+- **Creator alignment:** Does the placement respect creator preferences and exclusions?
+- **Disclosure compliance:** Is the sponsorship clearly communicated?
+- **Agent reliability:** Can the system explain its choice, recover from failures, and refuse unsafe work?
+- **Efficiency:** How much creator time is required from upload to approved export?
+
+Braintrust traces and evaluation results can make these decisions inspectable during the live demonstration.
+
+## Three-Minute Demo
+
+The HackSprint showcase is structured around one clear transformation:
+
+1. Upload a short creator video containing an unused wall, desk, or counter.
+2. Watch the agent inspect the scene and explain its candidate placement zones.
+3. Select an eligible campaign automatically based on scene context and safety rules.
+4. Generate a realistic sponsored version inside a Daytona workspace.
+5. Review the before-and-after result, agent trace, and evaluation scores.
+6. Approve the placement and export the final disclosed video.
+
+The core proof: a creator turns existing content into a safe sponsorship opportunity without filming an ad or reshooting the video.
+
 ## Trust, Rights, and Safety
 
 In-content advertising requires strong operational safeguards. A production system should include:
@@ -147,11 +220,18 @@ SceneSponsor should never alter a person's words, actions, identity, or expresse
 
 ## Status
 
-SceneSponsor is currently an early-stage product concept. This repository documents the vision, operating principles, and initial direction for future product development.
+SceneSponsor is currently being developed as a hackathon prototype for **Daytona HackSprint #5 with Braintrust**, hosted on July 24, 2026, in San Francisco.
+
+The submission deadline is **3:30 PM PT**, followed by finalist presentations beginning at **4:00 PM PT**.
+
+## Team
+
+- **Medikonda** — Creator and team member
+- Additional team members — names and roles to be added
 
 ## Ownership
 
-SceneSponsor is an original concept by **Medikonda**.
+SceneSponsor is an original concept by **Medikonda** and is being developed with the SceneSponsor HackSprint team.
 
 All rights reserved. The ideas, product direction, branding, and documentation in this repository may not be copied, reproduced, or used commercially without written permission from the owner.
 
