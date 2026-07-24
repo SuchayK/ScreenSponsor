@@ -8,6 +8,7 @@
 - Six deterministic evaluation records gate creator approval. Export returns `403` before approval.
 - The three players share transport state, with the original as master and 80ms drift correction.
 - A strict Fireworks video adapter and Daytona worker contract are included. The UI says **LOCAL VERIFIED MODE** when provider credentials are absent.
+- On Vercel without provider/storage keys, the seeded recovery run completes in one Fluid Compute request against checked-in owned artifacts. It is deliberately not represented as a live provider render.
 - The Supabase migration defines private, RLS-enabled job metadata tables. Storage buckets and provider credentials still need provisioning in the target team account.
 
 ## Honest provider status
