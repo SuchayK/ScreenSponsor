@@ -15,11 +15,11 @@ const FIREWORKS_SETTING = "scenesponsor:fireworks-enabled";
 function formatTime(n:number) { if(!Number.isFinite(n)) return "00:00.0"; return `00:${n.toFixed(1).padStart(4,"0")}`; }
 
 export default function ControlRoom() {
-  const [job,setJob]=useState(initial); const [busy,setBusy]=useState(false); const [playing,setPlaying]=useState(false); const [time,setTime]=useState(0); const [duration,setDuration]=useState(12); const [projector,setProjector]=useState(false); const [notice,setNotice]=useState(""); const [fireworksEnabled,setFireworksEnabled]=useState(true);
+  const [job,setJob]=useState(initial); const [busy,setBusy]=useState(false); const [playing,setPlaying]=useState(false); const [time,setTime]=useState(0); const [duration,setDuration]=useState(12); const [projector,setProjector]=useState(false); const [notice,setNotice]=useState(""); const [fireworksEnabled,setFireworksEnabled]=useState(false);
   const [activeClip,setActiveClip]=useState(0); const [sequenceRunning,setSequenceRunning]=useState(false); const [readyClips,setReadyClips]=useState([false,false,false]); const [clipTimes,setClipTimes]=useState([0,0,0]); const [rate,setRate]=useState(1); const [volume,setVolume]=useState(1); const [decisionBusy,setDecisionBusy]=useState(false);
   const videos=useRef<(HTMLVideoElement|null)[]>([]); const file=useRef<HTMLInputElement>(null); const players=useRef<HTMLDivElement>(null);
   const poll=useCallback(async(id:string)=>{try{const r=await fetch(`/api/jobs/${id}`,{cache:"no-store"});if(r.ok)setJob(await r.json());}catch{}},[]);
-  useEffect(()=>{const sync=()=>setFireworksEnabled(localStorage.getItem(FIREWORKS_SETTING)!=="false");sync();window.addEventListener("storage",sync);return()=>window.removeEventListener("storage",sync)},[]);
+  useEffect(()=>{const sync=()=>setFireworksEnabled(localStorage.getItem(FIREWORKS_SETTING)==="true");sync();window.addEventListener("storage",sync);return()=>window.removeEventListener("storage",sync)},[]);
   useEffect(()=>{const id=new URLSearchParams(window.location.search).get("job");if(id)void poll(id)},[poll]);
   useEffect(()=>{if(!job.id||["awaiting_approval","completed","rejected","failed"].includes(job.stage))return;const t=setInterval(()=>poll(job.id),1000);return()=>clearInterval(t)},[job.id,job.stage,poll]);
   useEffect(()=>{const master=videos.current[0];if(!master)return;const update=()=>{if(Number.isFinite(master.duration))setDuration(master.duration)};update();master.addEventListener("loadedmetadata",update);master.addEventListener("durationchange",update);return()=>{master.removeEventListener("loadedmetadata",update);master.removeEventListener("durationchange",update)}},[job.artifacts.original]);
