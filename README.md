@@ -1,3 +1,8 @@
+> **This is a fork.** Canonical repo: [toyeshhm/ScreenSponsor](https://github.com/toyeshhm/ScreenSponsor).
+> Team project built at Daytona HackSprint #5 — see [FORK-NOTES.md](FORK-NOTES.md) for what
+> [@SuchayK](https://github.com/SuchayK) contributed, and for the transparent-background product
+> masters in [`assets/product-masters/`](assets/product-masters/).
+
 # SceneSponsor
 # DEMO LINK: https://drive.google.com/file/d/1XJpNKfwrwpMZ4atPieKtSz5wGLe91Kvk/view?usp=sharing
 > Advertising that becomes part of the content, not an interruption to it.
